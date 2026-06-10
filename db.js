@@ -130,16 +130,49 @@ const DB = {
 
   async deleteRecording(id) {
     await openDB();
-    // 関連データも一括削除
+    // 関連データを事前取得（トランザクション外で行う）
     const segments = await this.getSegmentsByRecording(id);
     const rec = await this.getRecording(id);
-    const t = _db.transaction(['recordings', 'audio_blobs', 'segments', 'favorites'], 'readwrite');
+
+    // favorites を recording_id で検索
+    const favs = await new Promise((res, rej) => {
+      const t = tx('favorites');
+      const index = t.objectStore('favorites').index('recording_id');
+      const req = index.getAll(id);
+      req.onsuccess = e => res(e.target.result);
+      req.onerror = e => rej(e.target.error);
+    });
+
+    // bar_index を segment_id で検索
+    const barIndexIds = [];
+    for (const seg of segments) {
+      const bars = await new Promise((res, rej) => {
+        const t = tx('bar_index');
+        const index = t.objectStore('bar_index').index('segment_id');
+        const req = index.getAll(seg.id);
+        req.onsuccess = e => res(e.target.result);
+        req.onerror = e => rej(e.target.error);
+      });
+      bars.forEach(b => barIndexIds.push(b.id));
+    }
+
+    // 全関連データを1トランザクションで削除
+    const t = _db.transaction(
+      ['recordings', 'audio_blobs', 'segments', 'favorites', 'bar_index'],
+      'readwrite'
+    );
     t.objectStore('recordings').delete(id);
     if (rec && rec.audio_blob_key) {
       t.objectStore('audio_blobs').delete(rec.audio_blob_key);
     }
     for (const seg of segments) {
       t.objectStore('segments').delete(seg.id);
+    }
+    for (const fav of favs) {
+      t.objectStore('favorites').delete(fav.id);
+    }
+    for (const barId of barIndexIds) {
+      t.objectStore('bar_index').delete(barId);
     }
     return new Promise((res, rej) => {
       t.oncomplete = () => res();
