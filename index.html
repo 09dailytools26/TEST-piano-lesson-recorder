@@ -27,18 +27,27 @@
     </div>
   </header>
 
-  <!-- 録音バナー（録音中のみ表示） -->
-  <div id="rec-banner" class="rec-banner hidden">
-    <span class="rec-dot"></span>
-    <span class="rec-timer" id="rec-timer">00:00:00</span>
-    <span class="rec-label">録音中</span>
-  </div>
-
-  <!-- いま練習中バナー（項目選択後に表示） -->
-  <div id="now-banner" class="now-banner hidden">
-    <span class="now-banner-label">いま練習中</span>
-    <span class="now-banner-name" id="now-banner-name"></span>
-    <span class="now-banner-since" id="now-banner-since"></span>
+  <!-- ステータスエリア（固定高さ・常時表示） -->
+  <div class="status-area">
+    <!-- 待機中 -->
+    <div class="status-idle" id="status-idle">
+      <div class="status-idle-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+      </div>
+      <span class="status-idle-text">録音待機中</span>
+    </div>
+    <!-- 録音中（タイマー＋ドット） -->
+    <div class="status-rec" id="status-rec">
+      <span class="rec-dot"></span>
+      <span class="rec-timer" id="rec-timer">00:00:00</span>
+      <span class="rec-label">録音中</span>
+    </div>
+    <!-- 練習中（項目選択後に録音中と並列表示） -->
+    <div class="status-now hidden" id="status-now">
+      <span class="now-label">♪ いま練習中</span>
+      <span class="now-name" id="now-banner-name"></span>
+      <span class="now-since" id="now-banner-since"></span>
+    </div>
   </div>
 
   <!-- 録音開始ボタン（最上段固定） -->
