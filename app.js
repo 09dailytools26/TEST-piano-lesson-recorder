@@ -623,10 +623,34 @@ async function openPlayer(rec, seg, fromType, favStart, favEnd) {
 
   showPage('page-player');
 
+  // デバッグログ：SEGMENTSの実データと再生範囲を出力
+  console.log('[openPlayer] fromType:', fromType);
+  console.log('[openPlayer] seg:', seg ? { id: seg.id, start_seconds: seg.start_seconds, end_seconds: seg.end_seconds, last_position_seconds: seg.last_position_seconds } : null);
+  console.log('[openPlayer] rangeStart:', rangeStart, '/ rangeEnd:', rangeEnd);
+
   // 続きから再生の判定
   const lastPos = seg
     ? (seg.last_position_seconds || 0)
     : (rec.last_position_seconds || 0);
+
+  console.log('[openPlayer] lastPos:', lastPos);
+
+  // canplayイベント後にシーク（iOS Safari対応：未ロード状態でのcurrentTime設定を防ぐ）
+  const seekAndPlay = (seekTo) => {
+    console.log('[openPlayer] seekTo（audio.currentTime設定値）:', seekTo);
+    const doSeek = () => {
+      state.audioElement.currentTime = seekTo;
+      updateSeekDisplay(seekTo, rangeStart, rangeEnd);
+      playAudio();
+    };
+    if (state.audioElement.readyState >= 2) {
+      // 既にロード済みならすぐシーク
+      doSeek();
+    } else {
+      // ロード待ちしてからシーク
+      state.audioElement.addEventListener('canplay', doSeek, { once: true });
+    }
+  };
 
   if (lastPos > rangeStart + 3 && lastPos < rangeEnd - 3) {
     const toast = document.getElementById('resume-toast');
@@ -636,21 +660,15 @@ async function openPlayer(rec, seg, fromType, favStart, favEnd) {
 
     document.getElementById('btn-resume-yes').onclick = () => {
       toast.classList.add('hidden');
-      state.audioElement.currentTime = lastPos;
-      updateSeekDisplay(lastPos, rangeStart, rangeEnd);
-      playAudio();
+      seekAndPlay(lastPos);
     };
     document.getElementById('btn-resume-no').onclick = () => {
       toast.classList.add('hidden');
-      state.audioElement.currentTime = rangeStart;
-      updateSeekDisplay(rangeStart, rangeStart, rangeEnd);
-      playAudio();
+      seekAndPlay(rangeStart);
     };
   } else {
     document.getElementById('resume-toast').classList.add('hidden');
-    state.audioElement.currentTime = rangeStart;
-    updateSeekDisplay(rangeStart, rangeStart, rangeEnd);
-    playAudio();
+    seekAndPlay(rangeStart);
   }
 
   // シークバー更新
