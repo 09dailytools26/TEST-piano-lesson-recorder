@@ -14,6 +14,7 @@ const state = {
   activeItemId: null,     // 現在録音中の項目ID
   currentSegmentStart: null, // 現在区間の開始時刻(Date)
   markers: [],            // [{itemId, startTime(Date)}]
+  recStopTime: null,
   holdTimer: null,
   holdInterval: null,
 
@@ -490,7 +491,7 @@ async function renderPlayPage() {
       </div>
       <span class="list-item-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
     `;
-    row.addEventListener('click', () => openItemHistory(item, segs));
+    row.addEventListener('click', () => openItemHistory(item));
     itemPane.appendChild(row);
   }
   if (itemPane.children.length === 0) {
@@ -535,7 +536,7 @@ async function renderFavTab() {
   }
 }
 
-async function openItemHistory(item, segs) {
+async function openItemHistory(item) {
   const itemPane = document.getElementById('tab-item');
   itemPane.innerHTML = '';
 
@@ -546,14 +547,19 @@ async function openItemHistory(item, segs) {
   header.addEventListener('click', () => renderPlayPage());
   itemPane.appendChild(header);
 
-  // 録音日リスト（新しい順）
-  // recording_id ごとにグループ化し、その録音日のセグメントのみを使用する
+  // DBから最新のセグメントを毎回取得（続きから再生の位置が正しく反映される）
+  const segs = await DB.getSegmentsByItem(item.id);
+  if (segs.length === 0) {
+    itemPane.innerHTML += '<div class="empty-state">録音がまだありません</div>';
+    return;
+  }
+
+  // recording_id ごとにグループ化
   const recIds = [...new Set(segs.map(s => s.recording_id))];
   const recsWithDate = [];
   for (const recId of recIds) {
     const rec = await DB.getRecording(recId);
     if (!rec) continue;
-    // この録音IDかつこの項目IDのセグメントを全件取得
     const recSegs = segs.filter(s => s.recording_id === recId);
     recsWithDate.push({ rec, recSegs });
   }
@@ -571,8 +577,12 @@ async function openItemHistory(item, segs) {
         </div>
         <span class="list-item-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
       `;
-      // seg をそのまま渡すことで openPlayer が区間再生・続きから再生を正しく処理する
-      row.addEventListener('click', () => openPlayer(rec, seg, 'item'));
+      // タップごとにDBから最新segを取得してopenPlayerに渡す
+      row.addEventListener('click', async () => {
+        const freshSegs = await DB.getSegmentsByItem(item.id);
+        const freshSeg = freshSegs.find(s => s.id === seg.id) || seg;
+        openPlayer(rec, freshSeg, 'item');
+      });
       itemPane.appendChild(row);
     }
   }
