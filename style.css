@@ -88,44 +88,52 @@ svg { display: block; }
 .status-idle-icon svg { width: 22px; height: 22px; color: #E07B00; }
 .status-idle-text { font-size: 16px; font-weight: 600; color: #C0A080; }
 
-/* 録音中表示 */
+/* 録音中表示（タイマー部分・左側固定幅） */
 .status-rec {
   display: none;
   align-items: center;
-  gap: 10px;
-  width: 100%;
+  gap: 8px;
+  flex-shrink: 0;
 }
 .rec-dot {
-  width: 14px; height: 14px;
+  width: 12px; height: 12px;
   border-radius: 50%;
   background: #E03030;
   flex-shrink: 0;
   animation: blink 1s ease-in-out infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.rec-timer { font-size: 26px; font-weight: 700; color: #C0392B; letter-spacing: 0.05em; }
+.rec-timer { font-size: 22px; font-weight: 700; color: #C0392B; letter-spacing: 0.04em; }
 .rec-label {
-  font-size: 13px; font-weight: 700;
+  font-size: 12px; font-weight: 700;
   color: #fff;
   background: #E03030;
   border-radius: 99px;
-  padding: 3px 10px;
-  margin-left: auto;
+  padding: 3px 8px;
 }
 
-/* 練習中表示（録音中・項目選択後） */
-.status-now {
+/* 録音中エリア全体（rec + now を横並び） */
+.status-rec-wrap {
   display: none;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* 練習中表示（右側・残り幅を使う） */
+.status-now {
+  display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   flex: 1;
   min-width: 0;
-  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 2px solid #FFD6A0;
 }
 .now-label {
   font-size: 11px; font-weight: 700;
   color: #3a7d44;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 .now-name {
   font-size: 15px; font-weight: 700;
@@ -133,6 +141,9 @@ svg { display: block; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .now-since { font-size: 11px; color: #3a7d44; }
+/* 項目未選択時は薄く表示 */
+.status-now.empty .now-name { color: #C0C0C0; font-weight: 400; }
+.status-now.empty .now-since { display: none; }
 
 /* 録音開始エリア */
 .rec-start-area { padding: 12px 16px 6px; flex-shrink: 0; }

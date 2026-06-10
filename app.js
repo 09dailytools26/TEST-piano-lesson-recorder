@@ -258,10 +258,15 @@ function updateRecordingUI() {
   document.getElementById('btn-rec-start').classList.toggle('hidden', isRec);
 
   // ステータスエリア切替（固定高さ・レイアウト不変）
-  document.getElementById('status-idle').style.display = isRec ? 'none' : 'flex';
-  document.getElementById('status-rec').style.display  = isRec ? 'flex' : 'none';
+  document.getElementById('status-idle').style.display    = isRec ? 'none' : 'flex';
+  document.getElementById('status-rec-wrap').style.display = isRec ? 'flex' : 'none';
+
   if (!isRec) {
-    document.getElementById('status-now').classList.add('hidden');
+    // 待機中に戻したとき練習中表示をリセット
+    const nowEl = document.getElementById('status-now');
+    nowEl.classList.add('empty');
+    document.getElementById('now-banner-name').textContent = '曲目を選んでください';
+    document.getElementById('now-banner-since').textContent = '';
   }
 
   // 録音終了ボタン スタイル切替
@@ -366,7 +371,8 @@ function tapItemButton(itemId) {
   const item = state.items.find(i => i.id === itemId);
   document.getElementById('now-banner-name').textContent = item ? item.name : '';
   document.getElementById('now-banner-since').textContent = fmtTime(elapsed) + ' から';
-  document.getElementById('status-now').classList.remove('hidden');
+  const nowEl = document.getElementById('status-now');
+  nowEl.classList.remove('empty');
 
   renderHomeItems();
 }

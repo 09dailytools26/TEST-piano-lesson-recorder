@@ -36,17 +36,18 @@
       </div>
       <span class="status-idle-text">録音待機中</span>
     </div>
-    <!-- 録音中（タイマー＋ドット） -->
-    <div class="status-rec" id="status-rec">
-      <span class="rec-dot"></span>
-      <span class="rec-timer" id="rec-timer">00:00:00</span>
-      <span class="rec-label">録音中</span>
-    </div>
-    <!-- 練習中（項目選択後に録音中と並列表示） -->
-    <div class="status-now hidden" id="status-now">
-      <span class="now-label">♪ いま練習中</span>
-      <span class="now-name" id="now-banner-name"></span>
-      <span class="now-since" id="now-banner-since"></span>
+    <!-- 録音中：タイマー＋練習中情報を横並び -->
+    <div class="status-rec-wrap" id="status-rec-wrap">
+      <div class="status-rec" id="status-rec">
+        <span class="rec-dot"></span>
+        <span class="rec-timer" id="rec-timer">00:00:00</span>
+        <span class="rec-label">録音中</span>
+      </div>
+      <div class="status-now empty" id="status-now">
+        <span class="now-label">♪ いま練習中</span>
+        <span class="now-name" id="now-banner-name">曲目を選んでください</span>
+        <span class="now-since" id="now-banner-since"></span>
+      </div>
     </div>
   </div>
 
