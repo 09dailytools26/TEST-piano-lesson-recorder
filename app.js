@@ -255,7 +255,10 @@ function updateRecordingUI() {
 
   document.getElementById('rec-banner').classList.toggle('hidden', !isRec);
   document.getElementById('btn-rec-start').classList.toggle('hidden', isRec);
-  document.getElementById('btn-rec-end').classList.toggle('hidden', !isRec);
+  // 録音終了ボタンは常時表示。録音中かどうかでスタイルだけ切替
+  const endBtn = document.getElementById('btn-rec-end');
+  endBtn.classList.toggle('btn-rec-end--idle', !isRec);
+  endBtn.classList.toggle('btn-rec-end--active', isRec);
 
   // ナビボタン無効化
   ['btn-goto-play','btn-goto-items','btn-goto-settings'].forEach(id => {
@@ -275,6 +278,22 @@ function updateRecordingUI() {
 function renderHomeItems() {
   const list = document.getElementById('items-list');
   list.innerHTML = '';
+
+  // ⑤ 曲目未登録時はサンプルを薄い色で表示（データ登録はしない）
+  if (state.items.length === 0 && state.recState !== 'recording') {
+    const samples = ['ハノン', 'ピアノテクニック', 'ブルグミュラー', '発表会曲'];
+    samples.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn item-btn--sample';
+      btn.disabled = true;
+      btn.innerHTML = `
+        <span class="item-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="opacity:0.2"><circle cx="12" cy="12" r="8"/></svg></span>
+        <span class="item-name">${name}</span>
+      `;
+      list.appendChild(btn);
+    });
+    return;
+  }
 
   state.items.forEach(item => {
     const btn = document.createElement('button');

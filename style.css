@@ -589,3 +589,42 @@ svg { display: block; }
 .list-item.selected {
   background: #f0f7f1;
 }
+
+/* ===== ③ 録音終了ボタン 待機中スタイル ===== */
+.btn-rec-end--idle {
+  background: #f5f5f7;
+  border: 1.5px solid #d0d0d0;
+  color: #b0b0b0;
+  pointer-events: none;  /* 待機中はタップ無効 */
+}
+.btn-rec-end--active {
+  background: #fff0f0;
+  border: 1.5px solid #f5b8b8;
+  color: #c0392b;
+  pointer-events: auto;
+}
+
+/* ===== ⑤ サンプル曲目ボタン ===== */
+.item-btn--sample {
+  opacity: 0.4;
+  cursor: default;
+  border-style: dashed;
+}
+
+/* ===== ⑥ 項目管理 入力ガイド ===== */
+.items-guide {
+  padding: 14px 16px 10px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  background: #f5f5f7;
+}
+.items-guide-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c3c43;
+  margin-bottom: 6px;
+}
+.items-guide-examples {
+  font-size: 12px;
+  color: #8e8e93;
+  line-height: 1.6;
+}
