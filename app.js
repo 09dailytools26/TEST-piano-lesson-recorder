@@ -1157,6 +1157,7 @@ async function init() {
   initPlayer();
   initItemModal();
   initSettings();
+  updateRecordingUI(); // 起動時にslide-disabledを正しく設定
 }
 
 document.addEventListener('DOMContentLoaded', init);
