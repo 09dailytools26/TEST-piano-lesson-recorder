@@ -89,6 +89,7 @@ svg { display: block; }
   height: 80px;
   display: flex;
   align-items: center;
+  gap: 14px;
   padding: 0 16px;
   background: var(--white);
   border-bottom: 2px solid var(--blue-mid);
@@ -96,77 +97,94 @@ svg { display: block; }
   overflow: hidden;
 }
 
-/* 待機中 */
-.status-idle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-.status-idle-icon {
+/* 丸アイコン：常時同じ位置に表示。待機中=青、録音中=赤 */
+.status-circle {
   width: 44px; height: 44px;
   border-radius: 50%;
   background: var(--blue-light);
   border: 2px solid var(--blue-mid);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  transition: background 0.3s, border-color 0.3s;
 }
-.status-idle-icon svg { width: 22px; height: 22px; color: var(--blue); }
+.status-circle svg { width: 22px; height: 22px; color: var(--blue); transition: color 0.3s; }
+.status-circle--rec {
+  background: var(--red-light);
+  border-color: var(--red-mid);
+  animation: circle-pulse 1.2s ease-in-out infinite;
+}
+.status-circle--rec svg { color: var(--red); }
+@keyframes circle-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(230,57,70,0.3); }
+  50%      { box-shadow: 0 0 0 8px rgba(230,57,70,0); }
+}
+
+/* 右側テキストエリア */
+.status-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 待機中テキスト */
+.status-idle {
+  display: flex;
+  align-items: center;
+}
 .status-idle-text { font-size: 16px; font-weight: 600; color: var(--blue-dark); opacity: 0.6; }
 
-/* 録音中エリア全体（rec + now 横並び） */
+/* 録音中ラッパー（縦並び：タイマー＋練習中） */
 .status-rec-wrap {
   display: none;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+  flex-direction: column;
+  gap: 3px;
 }
 
-/* タイマー部分 */
+/* タイマー行 */
 .status-rec {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
 }
 .rec-dot {
-  width: 12px; height: 12px;
+  width: 10px; height: 10px;
   border-radius: 50%;
   background: var(--red);
   flex-shrink: 0;
   animation: blink 1s ease-in-out infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.rec-timer { font-size: 22px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
+.rec-timer { font-size: 20px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
 .rec-label {
-  font-size: 12px; font-weight: 700;
+  font-size: 11px; font-weight: 700;
   color: var(--white);
   background: var(--red);
   border-radius: 99px;
-  padding: 3px 8px;
+  padding: 2px 8px;
 }
 
-/* 練習中表示（右側） */
+/* 練習中表示（タイマーの下） */
 .status-now {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  flex: 1;
+  gap: 0px;
   min-width: 0;
-  padding-left: 12px;
+  padding-left: 18px;
   border-left: 2px solid var(--blue-mid);
 }
 .now-label {
-  font-size: 11px; font-weight: 700;
+  font-size: 10px; font-weight: 700;
   color: var(--blue-dark);
   letter-spacing: 0.03em;
 }
 .now-name {
-  font-size: 15px; font-weight: 700;
+  font-size: 14px; font-weight: 700;
   color: var(--blue-dark);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.now-since { font-size: 11px; color: var(--blue); }
+.now-since { font-size: 10px; color: var(--blue); }
 .status-now.empty .now-name { color: var(--gray-400); font-weight: 400; }
 .status-now.empty .now-since { display: none; }
 

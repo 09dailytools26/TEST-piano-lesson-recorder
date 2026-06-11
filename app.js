@@ -301,8 +301,11 @@ function updateRecordingUI() {
   document.getElementById('btn-rec-start').classList.toggle('hidden', isRec);
 
   // ステータスエリア切替（固定高さ・レイアウト不変）
-  document.getElementById('status-idle').style.display    = isRec ? 'none' : 'flex';
+  document.getElementById('status-idle').style.display     = isRec ? 'none' : 'flex';
   document.getElementById('status-rec-wrap').style.display = isRec ? 'flex' : 'none';
+  // 丸アイコン：録音中は赤、待機中は青
+  const circle = document.getElementById('status-circle');
+  if (circle) circle.classList.toggle('status-circle--rec', isRec);
 
   if (!isRec) {
     // 待機中に戻したとき練習中表示をリセット
