@@ -813,3 +813,40 @@ svg { display: block; }
   padding: 3px 10px;
   flex-shrink: 0;
 }
+
+/* ===== 曲目未登録時の誘導メッセージ ===== */
+.items-empty-guide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.items-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 0;
+}
+.items-empty-desc {
+  font-size: 14px;
+  color: var(--gray-500);
+  line-height: 1.7;
+  margin: 0;
+}
+.items-empty-btn {
+  margin-top: 8px;
+  padding: 14px 28px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(41,171,226,0.3);
+  transition: opacity 0.15s;
+}
+.items-empty-btn:active { opacity: 0.8; }
