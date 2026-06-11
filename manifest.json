@@ -1,6 +1,6 @@
 {
-  "name": "ピアノレッスン録音",
-  "short_name": "レッスン録音",
+  "name": "レッスン録音アプリ",
+  "short_name": "レッスン録音アプリ",
   "description": "ピアノのレッスンを録音・管理するアプリ",
   "start_url": "./index.html",
   "display": "standalone",
