@@ -36,7 +36,7 @@
     <div class="status-right">
       <!-- 待機中 -->
       <div class="status-idle" id="status-idle">
-        <div class="status-circle" id="status-circle">
+        <div class="status-circle">
           <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
         </div>
         <span class="status-idle-text">録音待機中</span>
@@ -44,7 +44,9 @@
       <!-- 録音中：1行中央 -->
       <div class="status-rec-wrap" id="status-rec-wrap">
         <div class="status-rec" id="status-rec">
-          <span class="rec-dot"></span>
+          <div class="status-circle" id="status-circle">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+          </div>
           <span class="rec-timer" id="rec-timer">00:00</span>
           <span class="rec-label">録音中</span>
         </div>

@@ -22,7 +22,7 @@
   --orange:     #FF9500;   /* 練習中（使用停止） */
   --orange-light:#FFF5E0;
   /* 曲目ボタン専用 */
-  --item-bg:    #FFF9C4;
+  --item-bg:    #FFFDE7;
   --item-border:#F3E5AB;
   --item-text:  #5C4A00;
   --item-sel-border: #FF7F8A; /* 選択中の赤枠 */
@@ -73,8 +73,8 @@ svg { display: block; }
   display: flex; align-items: center; justify-content: center;
   border-radius: 14px;
   background: var(--white);
-  color: var(--blue);
-  border: 2px solid var(--blue);
+  color: var(--blue-dark);
+  border: 2px solid var(--blue-dark);
 }
 .icon-btn svg { width: 26px; height: 26px; }
 .icon-btn:active { background: var(--blue-light); }
@@ -102,7 +102,7 @@ svg { display: block; }
 
 /* ステータスエリア（縦幅いっぱい・中央揃え） */
 .status-area {
-  height: 110px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,15 +171,9 @@ svg { display: block; }
   justify-content: center;
   gap: 8px;
 }
-.rec-dot {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-  animation: blink 1s ease-in-out infinite;
-}
+.rec-dot { display: none; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.rec-timer { font-size: 30px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
+.rec-timer { font-size: 36px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
 .rec-label {
   font-size: 14px; font-weight: 700;
   color: var(--white);
@@ -237,7 +231,7 @@ svg { display: block; }
   width: 100%;
   display: flex; align-items: center; gap: 14px;
   padding: 22px 18px;
-  background: var(--white);
+  background: #FFFDE7;
   border: 2px solid var(--item-border);
   border-radius: 18px;
   font-size: 19px; font-weight: 600;
@@ -249,17 +243,17 @@ svg { display: block; }
 }
 .item-btn:active { transform: scale(0.97); }
 
-/* 選択中：赤枠・白背景 */
+/* 選択中：赤枠・#FFFDE7背景 */
 .item-btn.active {
-  background: var(--white);
+  background: #FFFDE7;
   border-color: var(--item-sel-border);
   border-width: 3px;
   color: var(--item-text);
   box-shadow: 0 3px 12px rgba(255,127,138,0.25);
 }
-/* 済み：白統一（緑廃止） */
+/* 済み：#FFFDE7統一 */
 .item-btn.done {
-  background: var(--white);
+  background: #FFFDE7;
   border-color: var(--item-border);
   color: var(--item-text);
 }
