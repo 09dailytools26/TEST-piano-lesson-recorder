@@ -146,23 +146,19 @@ svg { display: block; }
 .status-rec {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
 }
 .rec-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-  animation: blink 1s ease-in-out infinite;
+  display: none;
 }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.rec-timer { font-size: 20px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
+.rec-timer { font-size: 28px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
 .rec-label {
-  font-size: 11px; font-weight: 700;
+  font-size: 14px; font-weight: 700;
   color: var(--white);
   background: var(--red);
   border-radius: 99px;
-  padding: 2px 8px;
+  padding: 3px 14px;
 }
 
 /* 練習中表示（タイマーの下） */
@@ -218,12 +214,12 @@ svg { display: block; }
 .item-btn {
   width: 100%;
   display: flex; align-items: center; gap: 14px;
-  padding: 26px 18px;
-  background: var(--white);
-  border: 2px solid var(--gray-200);
+  padding: 22px 18px;
+  background: #FFF9C4;
+  border: 2px solid #F5E8A0;
   border-radius: 18px;
   font-size: 19px; font-weight: 600;
-  color: var(--gray-800);
+  color: #5C4A00;
   text-align: left;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
@@ -231,13 +227,13 @@ svg { display: block; }
 }
 .item-btn:active { transform: scale(0.97); }
 
-/* 練習中：オレンジ */
+/* 練習中：赤枠・黄色背景 */
 .item-btn.active {
-  background: var(--orange-light);
-  border-color: var(--orange);
+  background: #FFF9C4;
+  border-color: var(--red);
   border-width: 3px;
-  color: #7A3D00;
-  box-shadow: 0 3px 12px rgba(255,149,0,0.25);
+  color: #5C4A00;
+  box-shadow: 0 3px 12px rgba(230,57,70,0.2);
 }
 /* 済み：グリーン */
 .item-btn.done {
