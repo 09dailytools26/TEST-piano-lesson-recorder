@@ -461,7 +461,6 @@ function renderHomeItems() {
     const guide = document.createElement('div');
     guide.className = 'items-empty-guide';
     guide.innerHTML = `
-      <button class="items-empty-btn" id="btn-goto-items-from-home-top">＋ 曲目を登録する</button>
       <div class="items-empty-icon">
         <svg viewBox="0 0 80 120" width="64" height="96" xmlns="http://www.w3.org/2000/svg">
           <path d="M44 10 C44 10 28 18 28 38 C28 52 38 60 44 62 L44 80 C44 80 30 76 24 88 C18 100 28 114 40 114 C52 114 58 104 58 96 C58 88 52 82 44 80 L44 14"
@@ -473,13 +472,10 @@ function renderHomeItems() {
       </div>
       <p class="items-empty-title">まず曲目登録から始めよう！</p>
       <p class="items-empty-sub">練習する曲やテキストを登録すると、曲ごとに録音を管理できるよ♪</p>
-      <button class="items-empty-btn" id="btn-goto-items-from-home">＋ 曲目を登録する</button>
+      <p class="items-empty-hint">右上の ✏️ マークからいつでも曲目を追加・変更できるよ</p>
+      <button class="items-empty-btn" id="btn-goto-items-from-home">今すぐ曲目登録！</button>
     `;
     list.appendChild(guide);
-    guide.querySelector('#btn-goto-items-from-home-top').addEventListener('click', () => {
-      renderItemsManage();
-      showPage('page-items');
-    });
     guide.querySelector('#btn-goto-items-from-home').addEventListener('click', () => {
       renderItemsManage();
       showPage('page-items');
