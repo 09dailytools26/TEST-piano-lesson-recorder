@@ -456,18 +456,21 @@ function renderHomeItems() {
   const list = document.getElementById('items-list');
   list.innerHTML = '';
 
-  // ⑤ 曲目未登録時はサンプルを薄い色で表示（データ登録はしない）
-  if (state.items.length === 0 && state.recState !== 'recording') {
-    const samples = ['ハノン', 'ピアノテクニック', 'ブルグミュラー', '発表会曲'];
-    samples.forEach(name => {
-      const btn = document.createElement('button');
-      btn.className = 'item-btn item-btn--sample';
-      btn.disabled = true;
-      btn.innerHTML = `
-        <span class="item-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="opacity:0.2"><circle cx="12" cy="12" r="8"/></svg></span>
-        <span class="item-name">${name}</span>
-      `;
-      list.appendChild(btn);
+  // 曲目未登録時は誘導メッセージを表示
+  if (state.items.length === 0) {
+    const guide = document.createElement('div');
+    guide.className = 'items-empty-guide';
+    guide.innerHTML = `
+      <div class="items-empty-icon">🎹</div>
+      <p class="items-empty-title">まず曲目登録から始めよう！</p>
+      <p class="items-empty-sub">練習する曲やテキストを登録すると、曲ごとに録音を管理できるよ♪</p>
+      <button class="items-empty-btn" id="btn-goto-items-from-home">＋ 曲目を登録する</button>
+    `;
+    list.appendChild(guide);
+    // 曲目管理ページへ遷移
+    guide.querySelector('#btn-goto-items-from-home').addEventListener('click', () => {
+      renderItemsManage();
+      showPage('page-items');
     });
     return;
   }
@@ -1038,14 +1041,6 @@ async function confirmDeleteFav(id) {
 ====================================================== */
 async function loadItems() {
   state.items = await DB.getAllItems();
-  // 初回デフォルト項目
-  if (state.items.length === 0) {
-    const defaults = ['ハノン', 'ピアノテクニック', 'ブルグミュラー', '発表会曲'];
-    for (let i = 0; i < defaults.length; i++) {
-      await DB.saveItem({ name: defaults[i], measure_bar: false, sort_order: i });
-    }
-    state.items = await DB.getAllItems();
-  }
 }
 
 function renderItemsManage() {

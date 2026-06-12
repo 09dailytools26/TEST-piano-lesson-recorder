@@ -173,7 +173,7 @@ svg { display: block; }
 }
 .rec-dot { display: none; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.rec-timer { font-size: 36px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
+.rec-timer { font-size: 42px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
 .rec-label {
   font-size: 14px; font-weight: 700;
   color: var(--white);
@@ -204,16 +204,16 @@ svg { display: block; }
   width: 100%;
   display: flex; align-items: center; justify-content: center; gap: 10px;
   padding: 26px 16px;
-  background: var(--sky);
-  color: var(--blue-dark);
+  background: #FF7F8A;
+  color: var(--white);
   font-size: 20px; font-weight: 700;
   border-radius: 20px;
-  border: 2.5px solid var(--blue-mid);
-  box-shadow: 0 2px 10px rgba(41,171,226,0.15);
+  border: none;
+  box-shadow: 0 4px 16px rgba(255,127,138,0.4);
   letter-spacing: 0.04em;
 }
 .btn-rec-start:active { opacity: 0.85; transform: scale(0.98); }
-.rec-start-icon svg { width: 22px; height: 22px; color: var(--red); }
+.rec-start-icon svg { width: 22px; height: 22px; color: var(--white); }
 
 /* 項目リスト */
 .items-list {
@@ -267,12 +267,43 @@ svg { display: block; }
 .item-btn-shake { animation: shake 0.3s ease; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
-/* サンプルボタン */
+/* サンプルボタン（未使用だが互換のため残す） */
 .item-btn--sample {
   opacity: 0.3;
   cursor: default;
   border-style: dashed;
 }
+
+/* 曲目未登録時の誘導UI */
+.items-empty-guide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 24px;
+  text-align: center;
+}
+.items-empty-icon { font-size: 52px; }
+.items-empty-title {
+  font-size: 20px; font-weight: 700;
+  color: var(--blue-dark);
+}
+.items-empty-sub {
+  font-size: 15px; color: var(--gray-600);
+  line-height: 1.7;
+}
+.items-empty-btn {
+  margin-top: 8px;
+  padding: 16px 32px;
+  background: #FF7F8A;
+  color: var(--white);
+  font-size: 17px; font-weight: 700;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(255,127,138,0.4);
+  letter-spacing: 0.03em;
+}
+.items-empty-btn:active { opacity: 0.85; transform: scale(0.97); }
 
 /* 録音終了エリア */
 .rec-end-area { padding: 6px 16px 18px; flex-shrink: 0; background: var(--sky); }
