@@ -5,14 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ピアノ録音">
   <title>ピアノレッスン録音</title>
-  <!-- PWA manifest -->
-  <link rel="manifest" href="manifest.json">
-  <!-- iOSホーム画面アイコン -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <!-- ファビコン -->
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -62,7 +55,7 @@
     </div>
   </div>
 
-  <!-- 録音開始ボタン（最上段固定） -->
+  <!-- 録音開始ボタン / 練習中バナー（同じ位置で切り替え） -->
   <div class="rec-start-area">
     <button class="btn-rec-start" id="btn-rec-start">
       <span class="rec-start-icon">
@@ -70,6 +63,12 @@
       </span>
       録音開始
     </button>
+    <div class="now-playing-banner hidden" id="now-playing-banner">
+      <span class="now-playing-text">
+        ♬ <span id="now-playing-name">曲目をタップしてください</span>
+        <span id="now-playing-since"></span>
+      </span>
+    </div>
   </div>
 
   <!-- 曲目ボタンリスト -->

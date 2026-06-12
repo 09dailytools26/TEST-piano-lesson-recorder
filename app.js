@@ -405,8 +405,15 @@ async function onRecordingStopped() {
 function updateRecordingUI() {
   const isRec = state.recState === 'recording';
 
-  // 録音開始ボタン表示切替
+  // 録音開始ボタン ↔ 練習中バナー 切り替え
   document.getElementById('btn-rec-start').classList.toggle('hidden', isRec);
+  document.getElementById('now-playing-banner').classList.toggle('hidden', !isRec);
+
+  if (!isRec) {
+    // 待機中に戻したときバナーをリセット
+    document.getElementById('now-playing-name').textContent = '曲目をタップしてください';
+    document.getElementById('now-playing-since').textContent = '';
+  }
 
   // ステータスエリア切替（固定高さ・レイアウト不変）
   document.getElementById('status-idle').style.display     = isRec ? 'none' : 'flex';
@@ -449,19 +456,18 @@ function renderHomeItems() {
   const list = document.getElementById('items-list');
   list.innerHTML = '';
 
-  // 曲目未登録時は曲目管理への誘導メッセージを表示
+  // ⑤ 曲目未登録時はサンプルを薄い色で表示（データ登録はしない）
   if (state.items.length === 0 && state.recState !== 'recording') {
-    const guide = document.createElement('div');
-    guide.className = 'items-empty-guide';
-    guide.innerHTML = `
-      <p class="items-empty-title">まずは教本・曲名を登録しましょう！</p>
-      <p class="items-empty-desc">右上の ✏️ ボタン（曲目管理）から<br>「ハノン」「ブルグミュラー」など<br>練習している教本や曲名を追加してください。</p>
-      <button class="items-empty-btn" id="btn-goto-items-guide">✏️ 曲目を追加する</button>
-    `;
-    list.appendChild(guide);
-    document.getElementById('btn-goto-items-guide').addEventListener('click', () => {
-      renderItemsManage();
-      showPage('page-items');
+    const samples = ['ハノン', 'ピアノテクニック', 'ブルグミュラー', '発表会曲'];
+    samples.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn item-btn--sample';
+      btn.disabled = true;
+      btn.innerHTML = `
+        <span class="item-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="opacity:0.2"><circle cx="12" cy="12" r="8"/></svg></span>
+        <span class="item-name">${name}</span>
+      `;
+      list.appendChild(btn);
     });
     return;
   }
@@ -534,6 +540,12 @@ function tapItemButton(itemId) {
   document.getElementById('now-banner-since').textContent = fmtTime(elapsed) + ' から';
   const nowEl = document.getElementById('status-now');
   nowEl.classList.remove('empty');
+
+  // rec-start-area内バナーも更新
+  const playingName = document.getElementById('now-playing-name');
+  const playingSince = document.getElementById('now-playing-since');
+  if (playingName) playingName.textContent = item ? item.name + '練習中' : '';
+  if (playingSince) playingSince.textContent = '　' + fmtTime(elapsed) + ' から';
 
   renderHomeItems();
 }
@@ -1026,7 +1038,14 @@ async function confirmDeleteFav(id) {
 ====================================================== */
 async function loadItems() {
   state.items = await DB.getAllItems();
-
+  // 初回デフォルト項目
+  if (state.items.length === 0) {
+    const defaults = ['ハノン', 'ピアノテクニック', 'ブルグミュラー', '発表会曲'];
+    for (let i = 0; i < defaults.length; i++) {
+      await DB.saveItem({ name: defaults[i], measure_bar: false, sort_order: i });
+    }
+    state.items = await DB.getAllItems();
+  }
 }
 
 function renderItemsManage() {

@@ -140,6 +140,8 @@ svg { display: block; }
   display: none;
   flex-direction: column;
   gap: 3px;
+  align-items: center;
+  flex: 1;
 }
 
 /* タイマー行 */
@@ -147,18 +149,23 @@ svg { display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
 }
 .rec-dot {
-  display: none;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  animation: blink 1s ease-in-out infinite;
 }
-.rec-timer { font-size: 28px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.rec-timer { font-size: 20px; font-weight: 700; color: var(--red-dark); letter-spacing: 0.04em; }
 .rec-label {
-  font-size: 14px; font-weight: 700;
+  font-size: 11px; font-weight: 700;
   color: var(--white);
   background: var(--red);
   border-radius: 99px;
-  padding: 3px 14px;
+  padding: 2px 8px;
 }
 
 /* 練習中表示（タイマーの下） */
@@ -171,9 +178,7 @@ svg { display: block; }
   border-left: 2px solid var(--blue-mid);
 }
 .now-label {
-  font-size: 10px; font-weight: 700;
-  color: var(--blue-dark);
-  letter-spacing: 0.03em;
+  display: none;
 }
 .now-name {
   font-size: 14px; font-weight: 700;
@@ -215,11 +220,11 @@ svg { display: block; }
   width: 100%;
   display: flex; align-items: center; gap: 14px;
   padding: 22px 18px;
-  background: #FFF9C4;
-  border: 2px solid #F5E8A0;
+  background: var(--white);
+  border: 2px solid var(--gray-200);
   border-radius: 18px;
   font-size: 19px; font-weight: 600;
-  color: #5C4A00;
+  color: var(--gray-800);
   text-align: left;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
@@ -227,13 +232,13 @@ svg { display: block; }
 }
 .item-btn:active { transform: scale(0.97); }
 
-/* 練習中：赤枠・黄色背景 */
+/* 練習中：オレンジ */
 .item-btn.active {
-  background: #FFF9C4;
-  border-color: var(--red);
+  background: var(--orange-light);
+  border-color: var(--orange);
   border-width: 3px;
-  color: #5C4A00;
-  box-shadow: 0 3px 12px rgba(230,57,70,0.2);
+  color: #7A3D00;
+  box-shadow: 0 3px 12px rgba(255,149,0,0.25);
 }
 /* 済み：グリーン */
 .item-btn.done {
@@ -808,4 +813,25 @@ svg { display: block; }
   border-radius: 99px;
   padding: 3px 10px;
   flex-shrink: 0;
+}
+
+/* ===== 練習中バナー（録音開始ボタンと同位置） ===== */
+.now-playing-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 16px;
+  background: #F0FAFF;
+  border-radius: 20px;
+  min-height: 78px;
+}
+.now-playing-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--blue);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
