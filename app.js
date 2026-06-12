@@ -461,13 +461,25 @@ function renderHomeItems() {
     const guide = document.createElement('div');
     guide.className = 'items-empty-guide';
     guide.innerHTML = `
-      <div class="items-empty-icon">🎹</div>
+      <button class="items-empty-btn" id="btn-goto-items-from-home-top">＋ 曲目を登録する</button>
+      <div class="items-empty-icon">
+        <svg viewBox="0 0 80 120" width="64" height="96" xmlns="http://www.w3.org/2000/svg">
+          <path d="M44 10 C44 10 28 18 28 38 C28 52 38 60 44 62 L44 80 C44 80 30 76 24 88 C18 100 28 114 40 114 C52 114 58 104 58 96 C58 88 52 82 44 80 L44 14"
+            fill="none" stroke="#FF7F8A" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="34" cy="108" rx="14" ry="9" fill="#FFD54F" stroke="#FF7F8A" stroke-width="2.5"/>
+          <line x1="44" y1="62" x2="62" y2="56" stroke="#29ABE2" stroke-width="4" stroke-linecap="round"/>
+          <line x1="44" y1="74" x2="62" y2="68" stroke="#29ABE2" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
       <p class="items-empty-title">まず曲目登録から始めよう！</p>
       <p class="items-empty-sub">練習する曲やテキストを登録すると、曲ごとに録音を管理できるよ♪</p>
       <button class="items-empty-btn" id="btn-goto-items-from-home">＋ 曲目を登録する</button>
     `;
     list.appendChild(guide);
-    // 曲目管理ページへ遷移
+    guide.querySelector('#btn-goto-items-from-home-top').addEventListener('click', () => {
+      renderItemsManage();
+      showPage('page-items');
+    });
     guide.querySelector('#btn-goto-items-from-home').addEventListener('click', () => {
       renderItemsManage();
       showPage('page-items');

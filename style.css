@@ -284,7 +284,13 @@ svg { display: block; }
   padding: 40px 24px;
   text-align: center;
 }
-.items-empty-icon { font-size: 52px; }
+.items-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0;
+  filter: drop-shadow(0 2px 6px rgba(255,127,138,0.3));
+}
 .items-empty-title {
   font-size: 20px; font-weight: 700;
   color: var(--blue-dark);
