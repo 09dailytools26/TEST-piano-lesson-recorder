@@ -770,29 +770,26 @@ async function openItemHistory(item, allItems, currentIndex) {
   const itemPane = document.getElementById('tab-item');
   itemPane.innerHTML = '';
 
-  const hasPrev = currentIndex > 0;
-  const hasNext = currentIndex < allItems.length - 1;
-
   // ヘッダー：[◁] [曲目名（中央・大）] [▷]
   const headerRow = document.createElement('div');
   headerRow.className = 'item-history-header';
   headerRow.innerHTML = `
-    <button class="item-history-nav ${hasPrev ? '' : 'disabled'}" id="item-nav-prev" ${hasPrev ? '' : 'disabled'}>
+    <button class="item-history-nav" id="item-nav-prev">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
     <div class="item-history-title">${item.name}</div>
-    <button class="item-history-nav ${hasNext ? '' : 'disabled'}" id="item-nav-next" ${hasNext ? '' : 'disabled'}>
+    <button class="item-history-nav" id="item-nav-next">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   `;
-  if (hasPrev) {
-    headerRow.querySelector('#item-nav-prev').addEventListener('click', () =>
-      openItemHistory(allItems[currentIndex - 1], allItems, currentIndex - 1));
-  }
-  if (hasNext) {
-    headerRow.querySelector('#item-nav-next').addEventListener('click', () =>
-      openItemHistory(allItems[currentIndex + 1], allItems, currentIndex + 1));
-  }
+  headerRow.querySelector('#item-nav-prev').addEventListener('click', () => {
+    const prevIndex = (currentIndex - 1 + allItems.length) % allItems.length;
+    openItemHistory(allItems[prevIndex], allItems, prevIndex);
+  });
+  headerRow.querySelector('#item-nav-next').addEventListener('click', () => {
+    const nextIndex = (currentIndex + 1) % allItems.length;
+    openItemHistory(allItems[nextIndex], allItems, nextIndex);
+  });
   itemPane.appendChild(headerRow);
 
   // セグメント取得
