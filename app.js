@@ -63,6 +63,19 @@ function fmtDateTime(isoStr) {
   return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${week[d.getDay()]}) ${h}:${m}`;
 }
 
+function fmtDateOnly(isoStr) {
+  if (!isoStr) return '日時不明';
+  const d = new Date(isoStr);
+  const week = ['日','月','火','水','木','金','土'];
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${week[d.getDay()]})`;
+}
+
+function fmtTimeHHMM(isoStr) {
+  if (!isoStr) return '--:--';
+  const d = new Date(isoStr);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
 function todayStr() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -617,6 +630,8 @@ async function renderPlayPage() {
         segs.map(s => items.find(i => i.id === s.item_id)?.name).filter(Boolean)
       )].join('・');
 
+      const startIso = rec.recorded_at || rec.created_at;
+      const endIso = startIso ? new Date(new Date(startIso).getTime() + rec.duration_seconds * 1000).toISOString() : null;
       const row = document.createElement('div');
       row.className = 'list-item';
       row.dataset.recId = rec.id;
@@ -626,8 +641,8 @@ async function renderPlayPage() {
           <span class="rec-check-box"></span>
         </label>
         <div class="list-item-main">
-          <div class="list-item-title">${fmtDateTime(rec.recorded_at || rec.created_at)}</div>
-          <div class="list-item-sub">${itemNames || '（項目なし）'} · ${fmtTime(rec.duration_seconds)}</div>
+          <div class="list-item-title">${fmtDateOnly(startIso)}</div>
+          <div class="list-item-sub">${fmtTimeHHMM(startIso)} 〜 ${fmtTimeHHMM(endIso)}　${itemNames || '（項目なし）'}</div>
         </div>
         <span class="list-item-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
       `;
@@ -686,10 +701,12 @@ async function renderPlayPage() {
   const itemGrid = document.createElement('div');
   itemGrid.className = 'item-tab-grid';
   let hasItem = false;
+  const itemsWithSegs = [];
   for (const item of items) {
     const segs = await DB.getSegmentsByItem(item.id);
     if (segs.length === 0) continue;
     hasItem = true;
+    itemsWithSegs.push(item);
     const btn = document.createElement('button');
     btn.className = 'item-tab-btn';
     btn.innerHTML = `
@@ -697,9 +714,14 @@ async function renderPlayPage() {
       <span class="item-tab-count">${segs.length}件</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg>
     `;
-    btn.addEventListener('click', () => openItemHistory(item));
+    btn.addEventListener('click', () => openItemHistory(item, itemsWithSegs, itemsWithSegs.length - 1));
     itemGrid.appendChild(btn);
   }
+  // ボタンのクリックハンドラを正しいindexで再設定
+  const btns = itemGrid.querySelectorAll('.item-tab-btn');
+  btns.forEach((btn, idx) => {
+    btn.onclick = () => openItemHistory(itemsWithSegs[idx], itemsWithSegs, idx);
+  });
   if (!hasItem) {
     itemPane.innerHTML = '<div class="empty-state">録音がまだありません</div>';
   } else {
@@ -744,26 +766,38 @@ async function renderFavTab() {
   }
 }
 
-async function openItemHistory(item) {
+async function openItemHistory(item, allItems, currentIndex) {
   const itemPane = document.getElementById('tab-item');
   itemPane.innerHTML = '';
 
-  // 戻るボタン＋曲目名を1行に
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < allItems.length - 1;
+
+  // ヘッダー：[←大] [曲目名] [◁] [▷]
   const headerRow = document.createElement('div');
   headerRow.className = 'item-history-header';
   headerRow.innerHTML = `
     <button class="item-history-back" id="item-history-back-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="28" height="28"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="32" height="32"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
     <div class="item-history-title">${item.name}</div>
+    <button class="item-history-nav ${hasPrev ? '' : 'disabled'}" id="item-nav-prev" ${hasPrev ? '' : 'disabled'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="item-history-nav ${hasNext ? '' : 'disabled'}" id="item-nav-next" ${hasNext ? '' : 'disabled'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
   `;
   headerRow.querySelector('#item-history-back-btn').addEventListener('click', () => renderPlayPage());
+  if (hasPrev) {
+    headerRow.querySelector('#item-nav-prev').addEventListener('click', () =>
+      openItemHistory(allItems[currentIndex - 1], allItems, currentIndex - 1));
+  }
+  if (hasNext) {
+    headerRow.querySelector('#item-nav-next').addEventListener('click', () =>
+      openItemHistory(allItems[currentIndex + 1], allItems, currentIndex + 1));
+  }
   itemPane.appendChild(headerRow);
-
-  // 区切り線
-  const divider = document.createElement('div');
-  divider.className = 'item-history-divider';
-  itemPane.appendChild(divider);
 
   // セグメント取得
   const segs = await DB.getSegmentsByItem(item.id);
@@ -775,7 +809,7 @@ async function openItemHistory(item) {
     return;
   }
 
-  // recording_id ごとにグループ化
+  // recording_id ごとにグループ化・日時順ソート
   const recIds = [...new Set(segs.map(s => s.recording_id))];
   const recsWithDate = [];
   for (const recId of recIds) {
@@ -784,7 +818,6 @@ async function openItemHistory(item) {
     const recSegs = segs.filter(s => s.recording_id === recId);
     recsWithDate.push({ rec, recSegs });
   }
-  // 新しい日時順にソート
   recsWithDate.sort((a, b) => {
     const aTime = a.rec.recorded_at || a.rec.created_at || a.rec.lesson_date;
     const bTime = b.rec.recorded_at || b.rec.created_at || b.rec.lesson_date;
