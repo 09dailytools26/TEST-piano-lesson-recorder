@@ -773,22 +773,18 @@ async function openItemHistory(item, allItems, currentIndex) {
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < allItems.length - 1;
 
-  // ヘッダー：[←大] [曲目名] [◁] [▷]
+  // ヘッダー：[◁] [曲目名（中央・大）] [▷]
   const headerRow = document.createElement('div');
   headerRow.className = 'item-history-header';
   headerRow.innerHTML = `
-    <button class="item-history-back" id="item-history-back-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="32" height="32"><polyline points="15 18 9 12 15 6"/></svg>
+    <button class="item-history-nav ${hasPrev ? '' : 'disabled'}" id="item-nav-prev" ${hasPrev ? '' : 'disabled'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
     <div class="item-history-title">${item.name}</div>
-    <button class="item-history-nav ${hasPrev ? '' : 'disabled'}" id="item-nav-prev" ${hasPrev ? '' : 'disabled'}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
     <button class="item-history-nav ${hasNext ? '' : 'disabled'}" id="item-nav-next" ${hasNext ? '' : 'disabled'}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="9 18 15 12 9 6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   `;
-  headerRow.querySelector('#item-history-back-btn').addEventListener('click', () => renderPlayPage());
   if (hasPrev) {
     headerRow.querySelector('#item-nav-prev').addEventListener('click', () =>
       openItemHistory(allItems[currentIndex - 1], allItems, currentIndex - 1));

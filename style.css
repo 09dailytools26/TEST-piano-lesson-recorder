@@ -413,25 +413,17 @@ svg { display: block; }
 .item-history-header {
   display: flex;
   align-items: center;
-  gap: 2px;
   padding: 6px 8px;
   background: var(--blue-light);
   border-bottom: 1.5px solid var(--blue-mid);
 }
 
 .item-history-back {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  color: var(--blue-dark);
-  flex-shrink: 0;
-  border-radius: 10px;
+  display: none; /* 削除 */
 }
-.item-history-back:active { background: var(--blue-mid); }
 
 .item-history-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--blue-dark);
   line-height: 1.3;
@@ -440,6 +432,7 @@ svg { display: block; }
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
   padding: 0 4px;
 }
 
@@ -447,9 +440,10 @@ svg { display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  color: var(--blue-dark);
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
+  color: var(--blue-dark);
   border-radius: 10px;
 }
 .item-history-nav:active { background: var(--blue-mid); }
