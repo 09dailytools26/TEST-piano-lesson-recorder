@@ -54,6 +54,15 @@ function fmtDate(dateStr) {
   return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${week[d.getDay()]})`;
 }
 
+function fmtDateTime(isoStr) {
+  if (!isoStr) return '日時不明';
+  const d = new Date(isoStr);
+  const week = ['日','月','火','水','木','金','土'];
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${week[d.getDay()]}) ${h}:${m}`;
+}
+
 function todayStr() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -375,6 +384,7 @@ async function onRecordingStopped() {
     audio_blob_key: blobKey,
     duration_seconds: totalSec,
     last_position_seconds: 0,
+    recorded_at: new Date(state.recStartTime).toISOString(),
     created_at: new Date().toISOString()
   };
   await DB.saveRecording(rec);
@@ -473,7 +483,7 @@ function renderHomeItems() {
       <p class="items-empty-title">まず曲目登録から始めよう！</p>
       <p class="items-empty-sub">練習する曲やテキストを登録すると、曲ごとに録音を管理できるよ♪</p>
       <p class="items-empty-hint">右上の ✏️ マークからいつでも曲目を追加・変更できるよ</p>
-      <button class="items-empty-btn" id="btn-goto-items-from-home">今すぐ曲目登録！</button>
+      <button class="items-empty-btn" id="btn-goto-items-from-home">＋今すぐ登録</button>
     `;
     list.appendChild(guide);
     guide.querySelector('#btn-goto-items-from-home').addEventListener('click', () => {
@@ -616,7 +626,7 @@ async function renderPlayPage() {
           <span class="rec-check-box"></span>
         </label>
         <div class="list-item-main">
-          <div class="list-item-title">${fmtDate(rec.lesson_date)}</div>
+          <div class="list-item-title">${fmtDateTime(rec.recorded_at || rec.created_at)}</div>
           <div class="list-item-sub">${itemNames || '（項目なし）'} · ${fmtTime(rec.duration_seconds)}</div>
         </div>
         <span class="list-item-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -738,17 +748,34 @@ async function openItemHistory(item) {
   const itemPane = document.getElementById('tab-item');
   itemPane.innerHTML = '';
 
-  // 戻るヘッダー
-  const header = document.createElement('div');
-  header.className = 'section-header';
-  header.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>${item.name}`;
-  header.addEventListener('click', () => renderPlayPage());
-  itemPane.appendChild(header);
+  // 戻るボタン（大きく・文字付き）
+  const backBtn = document.createElement('button');
+  backBtn.className = 'item-history-back';
+  backBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+    戻る
+  `;
+  backBtn.addEventListener('click', () => renderPlayPage());
+  itemPane.appendChild(backBtn);
 
-  // DBから最新のセグメントを毎回取得（続きから再生の位置が正しく反映される）
+  // 曲目名タイトル（大きく）
+  const titleEl = document.createElement('div');
+  titleEl.className = 'item-history-title';
+  titleEl.textContent = item.name;
+  itemPane.appendChild(titleEl);
+
+  // 区切り線
+  const divider = document.createElement('div');
+  divider.className = 'item-history-divider';
+  itemPane.appendChild(divider);
+
+  // セグメント取得
   const segs = await DB.getSegmentsByItem(item.id);
   if (segs.length === 0) {
-    itemPane.innerHTML += '<div class="empty-state">録音がまだありません</div>';
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = '録音がまだありません';
+    itemPane.appendChild(empty);
     return;
   }
 
@@ -761,8 +788,12 @@ async function openItemHistory(item) {
     const recSegs = segs.filter(s => s.recording_id === recId);
     recsWithDate.push({ rec, recSegs });
   }
-  // 新しい日付順にソート
-  recsWithDate.sort((a, b) => b.rec.lesson_date.localeCompare(a.rec.lesson_date));
+  // 新しい日時順にソート
+  recsWithDate.sort((a, b) => {
+    const aTime = a.rec.recorded_at || a.rec.created_at || a.rec.lesson_date;
+    const bTime = b.rec.recorded_at || b.rec.created_at || b.rec.lesson_date;
+    return bTime.localeCompare(aTime);
+  });
 
   for (const { rec, recSegs } of recsWithDate) {
     for (const seg of recSegs) {
@@ -770,12 +801,11 @@ async function openItemHistory(item) {
       row.className = 'list-item';
       row.innerHTML = `
         <div class="list-item-main">
-          <div class="list-item-title">${fmtDate(rec.lesson_date)}</div>
+          <div class="list-item-title">${fmtDateTime(rec.recorded_at || rec.created_at)}</div>
           <div class="list-item-sub">${fmtTime(seg.start_seconds)}〜${fmtTime(seg.end_seconds)}</div>
         </div>
         <span class="list-item-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
       `;
-      // タップごとにDBから最新segを取得してopenPlayerに渡す
       row.addEventListener('click', async () => {
         const freshSegs = await DB.getSegmentsByItem(item.id);
         const freshSeg = freshSegs.find(s => s.id === seg.id) || seg;
