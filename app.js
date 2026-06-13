@@ -748,21 +748,17 @@ async function openItemHistory(item) {
   const itemPane = document.getElementById('tab-item');
   itemPane.innerHTML = '';
 
-  // 戻るボタン（大きく・文字付き）
-  const backBtn = document.createElement('button');
-  backBtn.className = 'item-history-back';
-  backBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
-    戻る
+  // 戻るボタン＋曲目名を1行に
+  const headerRow = document.createElement('div');
+  headerRow.className = 'item-history-header';
+  headerRow.innerHTML = `
+    <button class="item-history-back" id="item-history-back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="28" height="28"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="item-history-title">${item.name}</div>
   `;
-  backBtn.addEventListener('click', () => renderPlayPage());
-  itemPane.appendChild(backBtn);
-
-  // 曲目名タイトル（大きく）
-  const titleEl = document.createElement('div');
-  titleEl.className = 'item-history-title';
-  titleEl.textContent = item.name;
-  itemPane.appendChild(titleEl);
+  headerRow.querySelector('#item-history-back-btn').addEventListener('click', () => renderPlayPage());
+  itemPane.appendChild(headerRow);
 
   // 区切り線
   const divider = document.createElement('div');
