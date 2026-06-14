@@ -69,13 +69,13 @@ svg { display: block; }
   overflow: hidden;
 }
 .header-logo {
-  height: 28px;
+  height: 36px;
   width: auto;
   flex-shrink: 0;
 }
 .header-clef {
-  width: 22px;
-  height: 33px;
+  width: 28px;
+  height: 42px;
   flex-shrink: 0;
   filter: drop-shadow(0 1px 3px rgba(255,127,138,0.3));
 }
