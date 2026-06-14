@@ -60,7 +60,7 @@ svg { display: block; }
   z-index: 10;
 }
 .header-title {
-  font-family: 'Nunito', "Hiragino Marugothic ProN", "Hiragino Sans", sans-serif;
+  font-family: 'M PLUS Rounded 1c', "Hiragino Marugothic ProN", "Hiragino Sans", sans-serif;
   font-size: 22px;
   font-weight: 900;
   flex: 1;
