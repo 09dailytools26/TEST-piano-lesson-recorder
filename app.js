@@ -387,6 +387,15 @@ async function onRecordingStopped() {
     });
   }
 
+  // デバッグ：保存前のmarkersを全件出力
+  console.log('=== onRecordingStopped 発火 ===');
+  console.log('markers件数:', state.markers.length);
+  state.markers.forEach((m, i) => {
+    const startSec = (m.startTime - state.recStartTime) / 1000;
+    const endSec = (m.endTime - state.recStartTime) / 1000;
+    console.log(`  marker[${i}] itemId:${m.itemId} start:${startSec.toFixed(2)}s end:${endSec.toFixed(2)}s`);
+  });
+
   const blobKey = 'audio_' + Date.now();
   await DB.saveAudioBlob(blobKey, blob);
 
@@ -403,6 +412,11 @@ async function onRecordingStopped() {
   await DB.saveRecording(rec);
 
   // セグメント保存
+  console.log('=== 録音終了時 markers ===', JSON.stringify(state.markers.map(m => ({
+    itemId: m.itemId,
+    startSec: (m.startTime - state.recStartTime) / 1000,
+    endSec: m.endTime ? (m.endTime - state.recStartTime) / 1000 : totalSec
+  }))));
   for (let i = 0; i < state.markers.length; i++) {
     const m = state.markers[i];
     const startSec = (m.startTime - state.recStartTime) / 1000;
@@ -794,6 +808,14 @@ async function openItemHistory(item, allItems, currentIndex) {
 
   // セグメント取得
   const segs = await DB.getSegmentsByItem(item.id);
+
+  // デバッグ：取得したSEGMENTS全件を出力
+  console.log('=== openItemHistory SEGMENTS取得結果 ===');
+  console.log('item:', item.name, '/ segs件数:', segs.length);
+  segs.forEach((s, i) => {
+    console.log(`  seg[${i}] id:${s.id} recording_id:${s.recording_id} start:${s.start_seconds} end:${s.end_seconds}`);
+  });
+
   if (segs.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
@@ -818,6 +840,10 @@ async function openItemHistory(item, allItems, currentIndex) {
   });
 
   for (const { rec, recSegs } of recsWithDate) {
+    console.log(`=== recording_id: ${rec.id} のSEGMENTS (${recSegs.length}件) ===`);
+    recSegs.forEach((s, i) => {
+      console.log(`  seg[${i}] id:${s.id} item_id:${s.item_id} start_seconds:${s.start_seconds} end_seconds:${s.end_seconds}`);
+    });
     for (const seg of recSegs) {
       const row = document.createElement('div');
       row.className = 'list-item';
@@ -847,6 +873,17 @@ async function openPlayer(rec, seg, fromType, favStart, favEnd) {
   state.favStartSec = null;
   state.favEndSec = null;
 
+  // ① SEGMENTSの保存内容を全件出力
+  const allSegs = await DB.getSegmentsByRecording(rec.id);
+  console.log('=== ① SEGMENTS保存内容 (全件) ===');
+  allSegs.forEach((s, i) => {
+    console.log(`  [${i}] item_id:${s.item_id} start_seconds:${s.start_seconds} end_seconds:${s.end_seconds} last_position_seconds:${s.last_position_seconds}`);
+  });
+
+  // ② openPlayerに渡されたsegの値
+  console.log('=== ② openPlayerに渡されたseg ===');
+  console.log(seg ? {id: seg.id, item_id: seg.item_id, start_seconds: seg.start_seconds, end_seconds: seg.end_seconds, last_position_seconds: seg.last_position_seconds} : 'null');
+
   const blob = await DB.getAudioBlob(rec.audio_blob_key);
   if (!blob) { showToast('音声データが見つかりません'); return; }
 
@@ -862,7 +899,9 @@ async function openPlayer(rec, seg, fromType, favStart, favEnd) {
   const rangeStart = seg ? seg.start_seconds : (favStart ?? 0);
   const rangeEnd = seg ? seg.end_seconds : (favEnd ?? rec.duration_seconds);
 
-  document.getElementById('player-header-title').textContent = fmtDate(rec.lesson_date);
+  // ③ rangeStartの値
+  console.log('=== ③ rangeStart / rangeEnd ===');
+  console.log('rangeStart:', rangeStart, '/ rangeEnd:', rangeEnd);
   document.getElementById('player-item-name').textContent = seg
     ? (state.items.find(i => i.id === seg.item_id)?.name || '')
     : (fromType === 'fav' ? '（お気に入り）' : '録音全体');
@@ -873,23 +912,18 @@ async function openPlayer(rec, seg, fromType, favStart, favEnd) {
 
   showPage('page-player');
 
-  // デバッグログ：SEGMENTSの実データと再生範囲を出力
-  console.log('[openPlayer] fromType:', fromType);
-  console.log('[openPlayer] seg:', seg ? { id: seg.id, start_seconds: seg.start_seconds, end_seconds: seg.end_seconds, last_position_seconds: seg.last_position_seconds } : null);
-  console.log('[openPlayer] rangeStart:', rangeStart, '/ rangeEnd:', rangeEnd);
-
-  // 続きから再生の判定
   const lastPos = seg
     ? (seg.last_position_seconds || 0)
     : (rec.last_position_seconds || 0);
 
-  console.log('[openPlayer] lastPos:', lastPos);
+  console.log('=== lastPos ===', lastPos);
 
-  // canplayイベント後にシーク（iOS Safari対応：未ロード状態でのcurrentTime設定を防ぐ）
+  // ④⑤ seekAndPlay内でseekToとaudio.currentTimeを出力
   const seekAndPlay = (seekTo) => {
-    console.log('[openPlayer] seekTo（audio.currentTime設定値）:', seekTo);
+    console.log('=== ④ seekAndPlayに渡されたseekTo ===', seekTo);
     const doSeek = () => {
       state.audioElement.currentTime = seekTo;
+      console.log('=== ⑤ seek後のaudio.currentTime ===', state.audioElement.currentTime);
       updateSeekDisplay(seekTo, rangeStart, rangeEnd);
       playAudio();
     };
